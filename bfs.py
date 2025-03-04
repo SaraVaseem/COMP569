@@ -5,7 +5,7 @@ def bfs_get_neighbors(graph, node):
     return None
 
 def bfs_is_goal(node, goal):
-    # Todo: implementation-specific approach to get neighbors
+    # Todo: implementation-specific approach to check goal state
     return None
 
 def breadth_first_search(graph, start, goal):
