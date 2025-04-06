@@ -1,56 +1,177 @@
 import random
-from random import randrange
+import numpy as np
+import heapq
+import math
 
-#global variables
-starting_index = randrange(9)
-score = False
-grid = [[random.sample(range(9),1)]*3]*3
-starting_index = 0
-empty_space = [starting_index] * 1 #starting node (changes to walkable)
-other_spaces = [0] * 8 #obstacles
-open_list = [1,1,1,1,1,1,1,1,1]
-closed_list = [0,0,0,0,0,0,0,0,0]
+#build grid
+#grid = [1,2,3,4,5,6,7,8,0] #only needed for random function
+#(a,b,c,d,e,f,g,h,i) = grid #unpacking
+np_grid = np.array([1,2,3,4,5,6,7,8,0])
+solution = np.array([[1,2,3],[4,5,6],[7,8,0]])
+random.seed(0)
 
-class Node():
-    neighbor_cost = [[0 for x in range(3)] for y in range(3)] #can be 3, 5, or 8
+def randomize_grid():
+    global np_grid
+    #np_grid = np.random.choice(np_grid, size=9, replace=False)
+    random.shuffle(np_grid)
+    #np_grid = np.array(grid)
+    np_grid = display_grid()
+    return np_grid
+
+def display_grid():
+    global np_grid
+    return np_grid.reshape(3, 3)
+
+def start():
+    print(randomize_grid())
+    print("\n")
+
+#need to swap space with number
+def move_up():
+    #add 1 to row
+    curr_row = 0
+    curr_col = 0
+    for col, row in np.ndindex(np_grid.shape):
+        if np_grid[row][col] == 0:
+            curr_row = row
+            curr_col = col
+            row_i = row-1
+            np_grid[row][col] = np_grid[row_i][col]
+    for col, row in np.ndindex(np_grid.shape):
+        if row == curr_row-1 and col == curr_col:
+            np_grid[row][col] = 0
+    print(np_grid)
+    print("\n")
+    return np_grid
+
+def move_down():
+    #subtract 1 from row
+    curr_row = 0
+    curr_col = 0
+    for col, row in np.ndindex(np_grid.shape):
+        if np_grid[row][col] == 0:
+            curr_row = row
+            curr_col = col
+            row_i = row+1
+            np_grid[row][col] = np_grid[row_i][col]
+    for col, row in np.ndindex(np_grid.shape):
+        if row == curr_row+1 and col == curr_col:
+            np_grid[row][col] = 0
+    print(np_grid)
+    print("\n")
+    return np_grid
+
+def move_left():
+    #subtract 1 from col
+    curr_row = 0
+    curr_col = 0
+    for col, row in np.ndindex(np_grid.shape):
+        if np_grid[row][col] == 0:
+            curr_row = row
+            curr_col = col
+            col_i = col-1
+            np_grid[row][col] = np_grid[row][col_i]
+    for col, row in np.ndindex(np_grid.shape):
+        if row == curr_row and col == curr_col-1:
+            np_grid[row][col] = 0
+    print(np_grid)
+    print("\n")
+    return np_grid
+
+def move_right():
+    #add 1 to col
+    curr_row = 0
+    curr_col = 0
+    for col, row in np.ndindex(np_grid.shape):
+        if np_grid[row][col] == 0:
+            curr_row = row
+            curr_col = col
+            col_i = col+1
+            np_grid[row][col] = np_grid[row][col_i]
+    for col, row in np.ndindex(np_grid.shape):
+        if row == curr_row and col == curr_col+1:
+            np_grid[row][col] = 0
+    print(np_grid)
+    print("\n")
+    return np_grid
+
+def play():
+    #a star algorithm
+    chosen_row = 0
+    chosen_col = 0
+    for col, row in np.ndindex(np_grid.shape):
+        while(np_grid[row][col] != solution[row][col]):
+            
+            #find path
+            chosen_row, chosen_col = find_num(solution[row][col])
+
+            #swap numbers till we get to target number
+            swap(chosen_row,chosen_col)
+
+def find_num(val):
+
+    #manhattan distance
+    node_cost = np.zeros((3, 3))
+
     g_cost = 0
     h_cost = 0
-    f_cost = 0
-    lowest_cost = 0
+    f_cost = np.zeros((3, 3))
+    chosen_node_row = 0
+    chosen_node_col = 0
+    least_cost = math.inf
 
-def calc_cost():
-    
-    for neighbor in neighbor_cost:
-        if open_list[current_index] == 1: #if neighbor has open_list value of 1
-                Node.g_cost = other_spaces[starting_index] - empty_space[current_index] #distance from starting node to current position
-                Node.h_cost = other_spaces[target_index] - empty_space[current_index] #distance from end node to current index
-                Node.f_cost = g_cost + h_cost
+    #use manhattan distance to find shortest path from 0 to val, seeing other numbers as obstacles
+    for col, row in np.ndindex(np_grid.shape):
+        if(np_grid[row][col] == val):
+            #need to start counting backwards
+            h_cost = node_cost.sum()  #distance from end node to current index
+        if(np_grid[row][col] == 0):
+            node_cost[row][col] = 0
+        elif((row+1 < 3 and col+1 < 3 and np_grid[row+1][col+1] == 0) or
+             (row+1 < 3 and np_grid[row+1][col-1] == 0) or 
+             (col+1 < 3 and np_grid[row-1][col+1] == 0) or 
+             np_grid[row-1][col-1] == 0):
+            node_cost[row][col] = math.inf
+        elif((row+1 < 3 and np_grid[row+1][col] == 0) or
+             (row+1 < 3 and np_grid[row][col+1] == 0) or 
+             (np_grid[row-1][col] == 0) or 
+             np_grid[row][col-1] == 0):
+            node_cost[row][col] = 1
+        else:
+            node_cost[row][col] = math.inf
 
-def a_star():
-    
-    starting_index = randrange(9)
-    
-    while score==False:
-    
-        calc_cost(empty_space[starting_index])
-    
-        for i, cost in enumerate(neighbor_cost):
-            if i == 0:
-                lowest_cost = Node.f_cost[0]
-            if neighbor_cost[i] < neighbor_cost[i-1]:
-                lowest_cost = Node.f_cost[i]
-    
-        for i, j in grid: 
-            if Node.f_cost == lowest_cost:
-                closed_list[i] = 1 #set as new node
-                open_list[i] = 0
-                starting_index = grid[i][j]
-    
-        #check that grid is in order
-        if grid == [[1,2,3], [4,5,6], [7,8,9]]:
-            score = True
-            print("The AI won!")
-            return score
+        g_cost = node_cost.sum() #distance from starting node to current position
+        f_cost[row][col] = g_cost + h_cost
 
-def main():
-    a_star() 
+        if(f_cost[row][col] < least_cost and f_cost[row][col] != 0):
+            least_cost = f_cost[row][col]
+            chosen_node_row = row
+            chosen_node_col = col
+            #add this node to path
+    return chosen_node_row, chosen_node_col
+
+def swap(c_row,c_col):
+    for col, row in np.ndindex(np_grid.shape):
+        if(np_grid[row][col] == 0 and row == c_row+1 and col == c_col):
+            move_up()
+            break
+        elif(np_grid[row][col] == 0 and row == c_row-1 and col == c_col):
+            move_down()
+            break
+        elif(np_grid[row][col] == 0 and row == c_row and col == c_col+1):
+            move_left()
+            break
+        elif(np_grid[row][col] == 0 and row == c_row+1 and col == c_col-1):
+            move_right()
+            break
+
+#main function driver
+start()
+play()
+
+#Outline of what i want to happen:
+# new newGame = Game()
+#
+# newGame.start() //print original board config
+# newGame.play() //prints each board config everytime AI makes a move until the board is sorted
+# newGame.score() //prints out final config and how many moves the AI took and that it worked!
