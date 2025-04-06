@@ -167,9 +167,41 @@ def greedy_best_first(start, goal):
 
 ##############################################################
 
-# Change for different states
+# Sample Inputs
 start_state = EightPuzzle([1, 2, 3, 4, 0, 5, 6, 7, 8])
 goal_state = [1, 2, 3, 4, 5, 6, 7, 8, 0]
+
+start_state2 = EightPuzzle([1, 2, 0, 4, 5, 3, 7, 8, 6])
+goal_state2 = [1, 2, 3, 4, 5, 6, 7, 8, 0]
+
+start_state3 = EightPuzzle([1, 2, 3, 4, 5, 6, 0, 7, 8])
+goal_state3 = [1, 2, 3, 4, 5, 6, 7, 8, 0]
+
+##############################################################
+
+# Test Cases
+
+# Puzzle is already solved
+start_state = EightPuzzle([1, 2, 3, 4, 5, 6, 7, 8, 0])
+goal_state = [1, 2, 3, 4, 5, 6, 7, 8, 0]
+
+# Only one move to be made - check any off by 1 errors
+start_state = EightPuzzle([1, 2, 3, 4, 5, 6, 7, 0, 8])
+goal_state = [1, 2, 3, 4, 5, 6, 7, 8, 0]
+
+# Unsolvable case
+start_state = EightPuzzle([1, 2, 3, 4, 5, 6, 8, 7, 0])
+goal_state = [1, 2, 3, 4, 5, 6, 7, 8, 0]
+
+# Blank Space in Corner
+start_state = EightPuzzle([0, 1, 2, 3, 4, 5, 6, 7, 8])
+goal_state = [1, 2, 3, 4, 5, 6, 7, 8, 0]
+
+
+
+##############################################################
+
+
 
 print("BFS:")
 bfs(start_state, goal_state)
