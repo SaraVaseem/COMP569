@@ -148,15 +148,15 @@ def run_tests():
         
         ([AI   , AI   , EMPTY,
           EMPTY, HUMAN, EMPTY,
-          EMPTY, EMPTY, EMPTY],          2, "AI at 1 & 2                : Should complete win at 3 "),
+          EMPTY, HUMAN, EMPTY],          2, "AI at 1 & 2                : Should complete win at 3 "),
         
         ([HUMAN, EMPTY, EMPTY,
           EMPTY, AI   , EMPTY,
           EMPTY, EMPTY, HUMAN],          1, "Human Fork threat at 1 & 9 : Should block on side at 2"),
         
-        (['X','O','X',
-          'X','O','X',
-          'O','X', EMPTY],               8, "One empty spot             : Should take it to draw   ")
+        ([HUMAN,AI   ,HUMAN,
+          HUMAN,AI   ,HUMAN,
+          AI   ,HUMAN,EMPTY],               8, "One empty spot             : Should take it to draw   ")
     ]
 
     print("\nRunning tests:")
