@@ -4,15 +4,17 @@ from deep_gprgnn import CustomDeepGPRGNN
 
 # To Use PyG prebuilt Binaries:
 
-# Install Python 3.11
+# Install Python 3.11.7 and PyTorch 2.3.1
 
-# Linux Install:
+# Install Process:
 
 # Option 1: Download python3.11 through deadsnakes ppa
 
 # Option 2: (Ubuntu 25.04 doesn't have 3.11 in deadsnakes)
 # Use pyenv to install 3.11 - https://github.com/pyenv/pyenv?tab=readme-ov-file#linuxunix
-# pyenv virtualenv 3.11.7 comp569-311######################################################
+# pyenv install 3.11.7
+# pyenv virtualenv 3.11.7 comp569-311
+# pyenv local comp569-311
 
 # Install the last PyTorch that had cu121 wheels
 # pip install torch==2.3.1+cu121 \
@@ -23,7 +25,16 @@ from deep_gprgnn import CustomDeepGPRGNN
 #   torch-scatter torch-sparse torch-cluster torch-spline-conv torch-geometric \
 #   -f https://data.pyg.org/whl/torch-2.3.1+cu121.html
 
+# Option 3: (MacOS) cuda is not available
+# Follow pyenv steps up to before downloading pytorch
+# Install CPU only torch: pip install torch==2.3.1
+# brew install cmake libomp
+# pip install --upgrade pip setuptools wheel \
+#   && pip install --no-build-isolation torch-scatter torch-sparse torch-cluster torch-spline-conv torch-geometric
 
+# PyG does not have pre-created wheel binaries for MacOS. Have to build from source. Pytorch doesn't use anaconda anymore
+# Running the model on CPU is much slower
+# Note: MacOS CSPRNG random number generator produces less favorable boards/results than on Linux?
 
 
 ######################################################
